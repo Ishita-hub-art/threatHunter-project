@@ -1,70 +1,152 @@
 # ThreatHunter
+### AI-Based Cloud Security Threat Hunting Platform
 
-**ThreatHunter** is an AI-powered Cloud Security Threat Hunting Platform designed to automatically analyze cloud activity logs and identify potential security threats without manual intervention.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+
+**ThreatHunter** is a professional-grade, AI-powered security platform designed to automatically analyze cloud activity logs and identify potential security threats without manual intervention. It establishes behavioral baselines and detects anomalies using advanced machine learning.
+
+---
 
 ## 🚀 Overview
 
-The platform ingests activity logs from major cloud providers (AWS, Azure), processes them using machine learning algorithms to detect anomalies, and classifies these anomalies into specific threat categories. It provides a modern investigation dashboard for security analysts to monitor and respond to threats in real-time.
+Modern cloud environments generate massive volumes of activity logs. Security teams often struggle to manually analyze this data to find subtle threats like lateral movement or data exfiltration. **ThreatHunter** solves this by providing an automated, AI-driven detection pipeline that ingests, cleans, analyzes, and classifies security events in near real-time.
+
+---
 
 ## ✨ Key Features
 
--   **Log Ingestion**: Seamlessly collects activity logs from AWS CloudTrail and Azure Activity Logs.
--   **Behavior Anomaly Detection**: Uses AI (Isolation Forest) to establish behavioral baselines and detect deviations.
--   **Threat Classification**: Categorizes anomalies into threats like Brute Force, Account Compromise, or Data Exfiltration.
--   **Risk Scoring**: Assigns severity levels (Low, Medium, High, Critical) based on risk factors.
--   **Investigation Dashboard**: A premium UI for visual analytics and real-time threat monitoring.
+-   **📡 Multi-Cloud Ingestion**: Automated collection and normalization of AWS CloudTrail and Azure Activity logs.
+-   **🤖 AI Anomaly Detection Engine**: Uses unsupervised machine learning (Isolation Forest) to detect behavioral outliers.
+-   **🏷️ Intelligent Threat Classification**: Maps detected anomalies to specific TTPs (Tactics, Techniques, and Procedures).
+-   **⚖️ Dynamic Risk Scoring**: Context-aware severity assessment with priority tiering (Low, Medium, High, Critical).
+-   **🖥️ Investigation Dashboard**: Modern, glassmorphism-inspired UI for real-time monitoring and forensic analysis.
+
+---
+
+## 🏗️ System Architecture
+
+The following diagram illustrates the high-level data flow through the ThreatHunter platform:
+
+```mermaid
+graph TD
+    subgraph CloudSources ["Cloud Log Sources"]
+        AWS[AWS CloudTrail]
+        Azure[Azure Activity]
+    end
+
+    subgraph IngestionLayer ["Data Ingestion"]
+        Ingest[Log Ingestion Layer]
+    end
+
+    subgraph ProcessingLayer ["Processing Engine"]
+        Process[Preprocessing & Feature Extraction]
+    end
+
+    subgraph AIEngine ["AI & ML Engine"]
+        Anomaly[AI Anomaly Detection]
+    end
+
+    subgraph LogicLayer ["Classification & Scoring"]
+        Classify[Threat Classification]
+        Risk[Risk Scoring Engine]
+    end
+
+    subgraph FrontEnd ["Monitoring & Alerts"]
+        Alerts[Alerting System]
+        Dashboard[Investigation Dashboard]
+    end
+
+    AWS --> Ingest
+    Azure --> Ingest
+    Ingest --> Process
+    Process --> Anomaly
+    Anomaly --> Classify
+    Classify --> Risk
+    Risk --> Alerts
+    Alerts --> Dashboard
+
+    style CloudSources fill:#f5f5f5,stroke:#333
+    style IngestionLayer fill:#eef2ff,stroke:#6366f1
+    style ProcessingLayer fill:#ecfdf5,stroke:#10b981
+    style AIEngine fill:#fff7ed,stroke:#f59e0b
+    style LogicLayer fill:#fef2f2,stroke:#ef4444
+    style FrontEnd fill:#f8fafc,stroke:#64748b
+```
+
+For more detailed information, see our [Architecture Documentation](docs/architecture.md).
+
+---
 
 ## 🛠️ Technology Stack
 
--   **Backend**: Python, FastAPI
--   **Machine Learning**: Scikit-Learn (Behavioral Analysis)
--   **Database**: SQLite (Local storage)
--   **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+| Layer | Technologies |
+| :--- | :--- |
+| **Backend** | Python 3.8+, FastAPI, Uvicorn |
+| **Data Analysis** | Scikit-Learn (Isolation Forest), Pandas, Numpy |
+| **Storage** | SQLite3 (Persistent Metadata) |
+| **Frontend** | HTML5, CSS3 (Modern Glassmorphism), JavaScript (Vanilla) |
+| **Testing** | Postman, Manual Validation |
+
+---
 
 ## 📁 Project Structure
 
 ```bash
-/ThreatHunter
-  /backend
-    main.py           # API Server
-    ingestion.py      # Log ingestion logic
-    ai_engine.py      # Anomaly detection model
-    classifier.py     # Threat grading rules
-    database.py       # SQL database management
-  /frontend
-    index.html        # Main dashboard
-    styles.css        # UI styling
-    app.js            # Frontend logic
-  /docs
-    architecture_overview.md
-    log_ingestion_layer.md
-    ...               # See docs/ for full architectural details
-  /data
-    sample_logs.json  # Mock cloud log data for development
-  /screenshots
-    dashboard.png     # Visual preview of the platform
+ThreatHunter/
+├── docs/             # Technical Documentation
+│   ├── architecture.md
+│   ├── log_ingestion.md
+│   ├── anomaly_detection.md
+│   ├── threat_classification.md
+│   └── investigation_dashboard.md
+├── backend/          # Python AI and log processing modules
+│   ├── main.py       # API Entry Point
+│   ├── ingestion.py  # Data Intake
+│   ├── ai_engine.py  # ML Scoring logic
+│   ├── classifier.py # Risk assessment
+│   └── database.py   # SQL persistence
+├── frontend/         # Dashboard UI
+│   ├── index.html    # Layout
+│   ├── styles.css    # Aesthetics
+│   └── app.js        # Logic
+├── data/             # Sample Log datasets
+├── diagrams/         # Architectural Visuals
+└── screenshots/      # UI Previews
 ```
+
+---
 
 ## 🏁 Getting Started
 
-### 1. Prerequisites
-- Python 3.8+
-- pip
+### Installation
+1.  **Clone the Repository**:
+    ```bash
+    git clone https://github.com/YourUsername/ThreatHunter.git
+    cd ThreatHunter
+    ```
+2.  **Install Dependencies**:
+    ```bash
+    pip install fastapi uvicorn
+    ```
 
-### 2. Installation
-Clone the repository and install the required dependencies:
-```bash
-pip install fastapi uvicorn
-```
-
-### 3. Running the Project
-1. **Start the Backend**:
-   ```bash
-   cd backend
-   python main.py
-   ```
-2. **Access the Dashboard**:
-   Open `frontend/index.html` in your web browser.
+### Running the Platform
+1.  **Start the Backend API**:
+    ```bash
+    python backend/main.py
+    ```
+2.  **View the Dashboard**:
+    Open `frontend/index.html` in your browser.
 
 ---
-*Created for Academic Research & Prototype Demonstration.*
+
+## 🔮 Future Improvements
+
+-   [ ] **Real-time API Hooking**: Directly integrate with AWS CloudWatch and Azure Monitor APIs.
+-   [ ] **GPU Acceleration**: Implement deep learning models for sequence-based anomaly detection.
+-   [ ] **Multi-user RBAC**: Role-based access control for different tiers of security analysts.
+-   [ ] **Containerization**: Full Docker/Kubernetes deployment configurations.
+
+---
+*Maintained by the ThreatHunter Community. Licensed under the MIT License.*

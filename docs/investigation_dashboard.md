@@ -1,48 +1,30 @@
-# Investigation Dashboard (Academic Version)
+# Investigation Dashboard
 
 ## Overview
-The Investigation Dashboard is a lightweight web interface designed for terminal-level or simple browser-based security monitoring. It provides a visual summary of the AI-detected threats, allowing a student or researcher to see the platform's results in real-time.
+The **Investigation Dashboard** is the primary interface for security operations. It provides a visual, real-time command center for monitoring cloud security health.
 
 ## Purpose of the Module
-To translate raw database entries into a user-friendly visual display. It enables the security analyst to quickly identify high-risk alerts, view the AI's explanation for a threat, and see historical activity trends.
+To facilitate rapid decision-making by human security analysts. It aggregates dozens of complex security modules into a single "pane of glass," presenting the most critical threats in an intuitive, aesthetic layout.
 
 ## Inputs
-* **Alert Data:** JSON records from the local database (SQLite/JSON file).
-* **Metric Counts:** Aggregate summaries (e.g., total logs, total alerts).
+- **Alert API Stream**: Real-time JSON data from the backend alert service.
+- **Aggregated Metrics**: Statistical summaries (Counts, Trends) from the SQLite database.
 
 ## Processing Steps
-1. **Data Retrieval:** The frontend makes a request to the backend API to fetch the latest alerts.
-2. **Filtering & Sorting:** The UI allows users to sort alerts by "Risk Score" or filter by "Threat Type".
-3. **Visualization:** 
-   * A table displays the latest 10-20 alerts.
-   * Simple charts (e.g., bar charts or pie charts) show the distribution of threat categories.
-4. **Drill-down:** Clicking an alert opens a detail view with the user activity timeline and specific reasons why the AI flagged it.
+1.  **State Management**: Fetches and maintains the current list of active alerts in the browser memory.
+2.  **Visual Rendering**: Dynamically builds UI components like severity badges, heatmaps, and trend charts.
+3.  **Real-time Updates**: Polls the backend every 30 seconds (or uses WebSockets) to refresh the dashboard state.
+4.  **Investigation Workflow**: Handles user interactions, such as clicking an alert to expand the "Blast Radius" or "Activity Timeline".
 
-## Outputs
-* **Web Interface:** A responsive dashboard UI.
-* **Metric Cards:** Visual boxes showing total counts of threats, categorized by severity.
+## Output
+- **Graphical UI**: A modern, dark-mode web application accessible via browser.
 
-## Example Data Format
-**Input (Alert List from API):**
-```json
-[
-  {
-    "id": "1",
-    "timestamp": "2026-03-13 13:30",
-    "threat": "Brute Force",
-    "severity": "High",
-    "score": 92.5
-  },
-  {
-    "id": "2",
-    "timestamp": "2026-03-13 13:35",
-    "threat": "Account Compromise",
-    "severity": "Critical",
-    "score": 98.2
-  }
-]
+## Example Data
+**Backend Event:**
+`{ "threat": "Account Compromise", "count": 1 }`
+
+**UI Result:**
+A pulsating red notification card at the top of the dashboard feed.
+```html
+<div class="severity-badge severity-critical">CRITICAL</div>
 ```
-
-**Output (UI Element Concept):**
-* A red badge saying "CRITICAL: Account Compromise detected for user: dev_admin"
-* A chart showing 60% of threats are "Credential Stuffing".
