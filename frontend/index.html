@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatHunter | AI Cloud Security Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">ThreatHunter</span>
+            </div>
+            <nav>
+                <ul>
+                    <li class="active">Overview</li>
+                    <li>Investigate</li>
+                    <li>Settings</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1>Security Overview</h1>
+                <div class="header-actions">
+                    <button id="ingest-btn" class="btn secondary">Ingest Logs</button>
+                    <button id="analyze-btn" class="btn primary">Run AI Analysis</button>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Logs</div>
+                    <div id="stat-logs" class="stat-value">0</div>
+                </div>
+                <div class="stat-card urgent">
+                    <div class="stat-label">Total Alerts</div>
+                    <div id="stat-alerts" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Critical Threats</div>
+                    <div id="stat-critical" class="stat-value">0</div>
+                </div>
+            </section>
+
+            <!-- Table Section -->
+            <section class="table-section">
+                <h2>Active Threat Alerts</h2>
+                <div class="table-container">
+                    <table id="threat-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Identity</th>
+                                <th>Threat Category</th>
+                                <th>Score</th>
+                                <th>Severity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows populated by app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
