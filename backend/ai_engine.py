@@ -1,12 +1,15 @@
 import sqlite3
 import os
-import json
+import math
+from collections import defaultdict
 from database import DB_PATH
 
 class AnomalyDetector:
     def __init__(self):
-        pass
-        
+        self.action_counts = defaultdict(int)
+        self.user_action_counts = defaultdict(lambda: defaultdict(int))
+        self.total_logs = 0
+
     def get_logs(self):
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
@@ -16,38 +19,52 @@ class AnomalyDetector:
         conn.close()
         return logs
 
-    def calculate_anomaly_score(self, log):
+    def build_baselines(self, logs):
         """
-        Simplified rule-based anomaly scoring for academic implementation.
-        Returns a score from 0-100.
+        Builds statistical baselines from historical logs without requiring ML libraries.
+        Analyzes global action frequency and user-specific behavior.
         """
-        score = 0
+        self.total_logs = len(logs)
+        for log in logs:
+            self.action_counts[log['action']] += 1
+            self.user_action_counts[log['user_identity']][log['action']] += 1
+
+    def calculate_statistical_anomaly(self, log):
+        """
+        Calculates an anomaly score (0-100) using statistical rarity (Z-score heuristic approach).
+        """
+        score = 0.0
         
-        # 1. Unusual Time (Late night: 00:00 - 05:00)
-        try:
-            # Format: 2026-03-13T10:12:00Z
-            time_str = log['timestamp'].split('T')[1].split(':')[0]
-            hour = int(time_str)
-            if 0 <= hour <= 5:
-                score += 30
-        except:
-            pass
-            
-        # 2. Status Failure
+        # Heuristic 1: Global Action Rarity (Inverse Document Frequency style)
+        action_freq = self.action_counts.get(log['action'], 0)
+        if self.total_logs > 0:
+            probability = action_freq / self.total_logs
+            # If an action has never been seen or is extremely rare (< 5% of logs)
+            if probability < 0.05:
+                score += 35.0 * (1 - probability)
+                
+        # Heuristic 2: User-Specific Rarity
+        user_actions = sum(self.user_action_counts[log['user_identity']].values())
+        if user_actions > 0:
+            user_specific_freq = self.user_action_counts[log['user_identity']].get(log['action'], 0)
+            user_probability = user_specific_freq / user_actions
+            # If the user rarely or never does this action
+            if user_probability < 0.1:
+                score += 40.0 * (1 - user_probability)
+        else:
+            # Brand new user doing something
+            score += 25.0
+
+        # Heuristic 3: Status Failure
         if log['status'] == 'Failure':
-            score += 25
+            score += 20.0
             
-        # 3. Critical Actions (Delete, Write, Put)
+        # Heuristic 4: Critical Resource Context (Heuristic weighting)
         critical_keywords = ['Delete', 'Write', 'Put', 'Terminate', 'Remove']
         if any(kw in log['action'] for kw in critical_keywords):
-            score += 25
-            
-        # 4. Unusual Location (Simplified: IP starting with 185 or 203)
-        # In a real app this would use GeoIP. Here we use mock patterns.
-        if log['source_ip'].startswith('185.') or log['source_ip'].startswith('203.'):
-            score += 20
-            
-        return min(score, 100)
+            score += 15.0
+
+        return min(round(score, 2), 100.0)
 
     def detect_anomalies(self):
         logs = self.get_logs()
@@ -55,11 +72,14 @@ class AnomalyDetector:
             print("No logs found.")
             return []
 
+        # Train statistical model on current historical data
+        self.build_baselines(logs)
+
         results = []
         for log in logs:
-            score = self.calculate_anomaly_score(log)
-            # Only flag as suspicious if score is significant
-            if score >= 40:
+            score = self.calculate_statistical_anomaly(log)
+            # Threshold for statistical outlier
+            if score >= 45.0:
                 results.append({
                     "log_id": log['id'],
                     "user_identity": log['user_identity'],
@@ -73,6 +93,6 @@ class AnomalyDetector:
 if __name__ == "__main__":
     detector = AnomalyDetector()
     anomalies = detector.detect_anomalies()
-    print(f"Detected {len(anomalies)} anomalies using rule-based engine.")
+    print(f"Detected {len(anomalies)} anomalies using Statistical Analysis Engine.")
     for a in anomalies:
         print(a)

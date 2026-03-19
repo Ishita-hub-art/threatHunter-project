@@ -21,24 +21,41 @@ async function fetchMetrics() {
     }
 }
 
+let lastFetchedAlertId = 0;
+
 async function fetchAlerts() {
     try {
-        const res = await fetch(`${API_BASE}/alerts`);
+        const res = await fetch(`${API_BASE}/alerts?since_id=${lastFetchedAlertId}`);
         const alerts = await res.json();
         
-        threatTableBody.innerHTML = '';
-        alerts.forEach(alert => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${alert.timestamp}</td>
-                <td>${alert.user_identity}</td>
-                <td>${alert.threat_type}</td>
-                <td>${alert.anomaly_score}</td>
-                <td><span class="severity-badge severity-${alert.severity.toLowerCase()}">${alert.severity}</span></td>
-                <td><span class="view-btn">Investigate</span></td>
-            `;
-            threatTableBody.appendChild(row);
-        });
+        if (alerts.length > 0) {
+            // alerts are fetched DESC (newest first). Update highest ID seen.
+            const newMaxId = Math.max(...alerts.map(a => a.id));
+            if (newMaxId > lastFetchedAlertId) {
+                lastFetchedAlertId = newMaxId;
+            }
+            
+            // For inserting at the top properly while maintaining desc order time-wise:
+            // Since they are DESC, iterating and `insertBefore(firstChild)` will reverse them. 
+            // So we reverse the array first to append oldest-of-batch first to the top.
+            alerts.reverse().forEach(alert => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${alert.timestamp}</td>
+                    <td>${alert.user_identity}</td>
+                    <td>${alert.threat_type}</td>
+                    <td>${alert.anomaly_score}</td>
+                    <td><span class="severity-badge severity-${alert.severity.toLowerCase()}">${alert.severity}</span></td>
+                    <td><span class="view-btn">Investigate</span></td>
+                `;
+                threatTableBody.insertBefore(row, threatTableBody.firstChild);
+            });
+            
+            // Manage memory by removing elements if > 50
+            while (threatTableBody.children.length > 50) {
+                threatTableBody.removeChild(threatTableBody.lastChild);
+            }
+        }
     } catch (err) {
         console.error("Error fetching alerts:", err);
     }

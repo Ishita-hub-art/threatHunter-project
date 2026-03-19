@@ -2,18 +2,23 @@ from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 import os
-from database import DB_PATH, init_db
+from database import DB_PATH, init_db, get_db_connection
 from ingestion import ingest_logs
 from ai_engine import AnomalyDetector
 from classifier import classify_threat, save_alert
 
 app = FastAPI(title="ThreatHunter API")
 
-# Enable CORS for frontend integration
+# Restrict CORS for better security (No longer uses allow_origins=["*"])
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=[
+        "http://127.0.0.1:5500", 
+        "http://localhost:5500",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000"
+    ],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -24,7 +29,7 @@ def startup():
 
 @app.get("/api/v1/metrics")
 def get_metrics():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     cursor.execute("SELECT COUNT(*) FROM cloud_logs")
@@ -34,7 +39,8 @@ def get_metrics():
     total_alerts = cursor.fetchone()[0]
     
     cursor.execute("SELECT severity, COUNT(*) FROM alerts GROUP BY severity")
-    severity_dist = dict(cursor.fetchall())
+    # Handle Row objects by extracting keys/values
+    severity_dist = {row['severity']: row['COUNT(*)'] for row in cursor.fetchall()}
     
     conn.close()
     
@@ -45,11 +51,10 @@ def get_metrics():
     }
 
 @app.get("/api/v1/alerts")
-def get_alerts():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+def get_alerts(since_id: int = 0):
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM alerts ORDER BY id DESC LIMIT 50")
+    cursor.execute("SELECT * FROM alerts WHERE id > ? ORDER BY id DESC LIMIT 50", (since_id,))
     alerts = [dict(row) for row in cursor.fetchall()]
     conn.close()
     return alerts
