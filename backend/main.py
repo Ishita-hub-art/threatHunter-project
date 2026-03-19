@@ -16,7 +16,9 @@ app.add_middleware(
         "http://127.0.0.1:5500", 
         "http://localhost:5500",
         "http://localhost:3000",
-        "http://127.0.0.1:8000"
+        "http://127.0.0.1:8000",
+        "https://threat-hunter-project-706b19ze7-ishita-hub-arts-projects.vercel.app",
+        "https://threat-hunter-project.vercel.app"
     ],
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],

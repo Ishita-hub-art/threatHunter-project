@@ -78,8 +78,8 @@ class AnomalyDetector:
         results = []
         for log in logs:
             score = self.calculate_statistical_anomaly(log)
-            # Threshold for statistical outlier
-            if score >= 45.0:
+            # Threshold for statistical outlier lowered for small sample testing
+            if score >= 30.0:
                 results.append({
                     "log_id": log['id'],
                     "user_identity": log['user_identity'],

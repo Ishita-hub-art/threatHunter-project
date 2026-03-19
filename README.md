@@ -7,6 +7,9 @@
 
 **ThreatHunter** is a professional-grade, AI-powered security platform designed to automatically analyze cloud activity logs and identify potential security threats without manual intervention. It establishes behavioral baselines and detects anomalies using advanced machine learning.
 
+> 🌐 **Live Frontend Demo**: [View on Vercel](https://threat-hunter-project-706b19ze7-ishita-hub-arts-projects.vercel.app)  
+> *(Note: The Vercel deployment hosts the frontend dashboard. It expects the Python backend API to be running locally on your machine at `localhost:8000` to fetch data.)*
+
 ---
 
 ## 🚀 Overview

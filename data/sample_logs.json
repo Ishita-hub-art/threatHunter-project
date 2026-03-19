@@ -48,5 +48,25 @@
     "status": "Failure",
     "cloud_provider": "Azure",
     "region": "eastus"
+  },
+  {
+    "event_time": "2026-03-14T03:00:00Z",
+    "user_identity": "hacker_admin_xyz",
+    "source_ip": "104.28.14.19",
+    "action": "s3:DeleteBucket",
+    "resource": "arn:aws:s3:::prod-customer-data",
+    "status": "Success",
+    "cloud_provider": "AWS",
+    "region": "us-west-2"
+  },
+  {
+    "event_time": "2026-03-14T03:05:00Z",
+    "user_identity": "hacker_admin_xyz",
+    "source_ip": "104.28.14.19",
+    "action": "ec2:TerminateInstances",
+    "resource": "arn:aws:ec2:us-west-2:123456789012:instance/i-1234567890abcdef0",
+    "status": "Success",
+    "cloud_provider": "AWS",
+    "region": "us-west-2"
   }
 ]
